@@ -97,7 +97,7 @@ def Heat_maps(X_economic, X_health_indicators):
     fig, ax = plt.subplots(figsize=(10, 10))
     sns.heatmap(corrmat_health, vmax=1., ax=ax, square=False).xaxis.tick_bottom()
     plt.show()
-
+# Valuation Inflation Factor for all the independent variables for checking multicollinearity
 def VIF(X_economic_const, X_health_indicator_const):
     vif_eco_result = pd.Series([variance_inflation_factor(X_economic_const.values, i)
                                 for i in range(X_economic_const.shape[1])],
@@ -107,7 +107,7 @@ def VIF(X_economic_const, X_health_indicator_const):
                                   index=X_health_indicator_const.columns)
     print(vif_eco_result)
     print(vif_health_result)
-
+# Multiple Linear Regression Model to obtain the fitted Y-values, coefficients and intercept
 def regression(X_economic, y):
     regr = linear_model.LinearRegression()
     regr.fit(X_economic, y)
@@ -115,7 +115,8 @@ def regression(X_economic, y):
     print(X_economic.columns)
     print("Coefficients : \n", regr.coef_)
     #print(regr.summary)
-
+    
+# Residuals and Breusch-Pagan test for checking Heteroskedasticity and testing the Null-Hypothesis that there is no Heterscedasticity
 def regression_model(X_dep, Y_indep):
     labels = ['LM Statistic', 'LM-test p-value', 'F-Staistic', 'F-test p-value']
     model = sm.OLS(Y_indep, X_dep).fit()
@@ -135,6 +136,22 @@ def regression_model(X_dep, Y_indep):
     return (Y_model_fitted, model_norm_residuals, model_norm_residuals_abs_sqrt, data_checked)
 
 Y_fitted, norm_resids, norm_resids_abs_sqrt, data_checked = regression_model(X_health, Y)
+
+
+# QQplot for checking heteroscedasticity
+def QQplots(Y_fit, normal_resids_abs_sqrt):
+    plot_lm_3 = plt.figure()
+    plt.scatter(Y_fit, normal_resids_abs_sqrt, alpha=0.5)
+    sns.regplot(Y_fit, normal_resids_abs_sqrt,
+                scatter=False,
+                ci=False,
+                lowess=True,
+                line_kws={'color': 'red', 'lw': 1, 'alpha': 0.8});
+    plot_lm_3.axes[0].set_title('Scale-location')
+    plot_lm_3.axes[0].set_xlabel('Fitted Values')
+    plot_lm_3.axes[0].set_ylabel('$\sqrt{|Standardized-Residuals|}$')
+    plt.show()
+
 
 
 
@@ -159,43 +176,14 @@ for key in my_abbrev.keys():
     print(my_abbrev[key], end = ' ')
     print("                ------------->", end = ' ')
     print(key)
-# Scatter_Matrices(X_eco, X_health)
-# Corr_matrices(X_eco, X_health)
-# Heat_maps(X_eco, X_health)
-# VIF(X_eco_const, X_health_const)
-# regression(X_eco, Y)
-# regression(X_health, Y)
-# model = sm.OLS(Y, X_health).fit()
-# print(model.summary())
-# regression_model(X_health, Y)
-# model = sm.OLS(Y, X_eco).fit()
-# # print(model.summary())
-# regression_model(X_eco, Y)
-
-
-
-
-# plot_lm_3 = plt.figure()
-# plt.scatter(Y_fitted, norm_resids_abs_sqrt, alpha = 0.5)
-# sns.regplot(Y_fitted, norm_resids_abs_sqrt,
-#             scatter = False,
-#             ci = False,
-#             lowess = True,
-#             line_kws = {'color':'red', 'lw':1, 'alpha':0.8});
-# plot_lm_3.axes[0].set_title('Scale-location')
-# plot_lm_3.axes[0].set_xlabel('Fitted Values')
-# plot_lm_3.axes[0].set_ylabel('$\sqrt{|Standardized-Residuals|}$')
-# plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
+Scatter_Matrices(X_eco, X_health)
+Corr_matrices(X_eco, X_health)
+Heat_maps(X_eco, X_health)
+VIF(X_eco_const, X_health_const)
+regression(X_eco, Y)
+regression(X_health, Y)
+model = sm.OLS(Y, X_health).fit()
+regression_model(X_health, Y)
+model = sm.OLS(Y, X_eco).fit()
+regression_model(X_eco, Y)
+QQplots(Y_fitted, norm_resids_abs_sqrt)
