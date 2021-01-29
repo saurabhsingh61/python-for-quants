@@ -27,7 +27,7 @@ nRow, nCol = df1.shape
 df = df1.drop_duplicates(subset = ['Country']) #Removing categorical entry
 
 # Conversion of the categorical varibale Status into numerical value by assigning
-# values to developing/developed statuses
+# numerical values to developing/developed status
 lst_status = []
 for i in df.Status:
     if(i == 'Developing'):
